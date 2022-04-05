@@ -3,6 +3,7 @@ from flask import request
 
 from dao.model.genre import GenreSchema
 from implemented import genre_service
+from utils import auth_required
 
 genre_ns = Namespace('genres')
 
@@ -11,6 +12,7 @@ genres_schema = GenreSchema(many=True)
 
 @genre_ns.route('/')
 class GenresView(Resource):
+    @auth_required
     def get(self):
         """Функция для отображения всех жанров в базе"""
         all_genres = genre_service.get_all()
@@ -26,6 +28,7 @@ class GenresView(Resource):
 
 @genre_ns.route('/<int:gid>')
 class GenreView(Resource):
+    @auth_required
     def get(self, gid):
         """Функция для получения жанра из базы по ID"""
         genre = genre_service.get_one(gid)

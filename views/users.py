@@ -7,7 +7,6 @@ from flask import request
 
 user_ns = Namespace('users')
 
-
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
@@ -28,22 +27,8 @@ class UserView(Resource):
         return "", 201
 
 
-@user_ns.route('/<int:uid>')
-class DirectorView(Resource):
-    def get(self, uid):
-        """Функция для получения режиссера из базы по ID"""
-        user = user_service.get_one(uid)
-        return user_schema.dump(user), 200
-
-
-    def put(self, uid):
-        """Функция для внесения изменения в базу по ID"""
-        req_jason = user_schema.load(request.json)
-        req_jason["id"] = uid
-
-        user_service.update(req_jason)
-
-        return "", 204
+@user_ns.route('/<uid>')
+class UserView(Resource):
 
     def delete(self, uid):
         """Функция для удаления из базы по ID"""

@@ -5,7 +5,7 @@ from implemented import director_service
 
 from flask import request
 
-from utils import auth_required
+from utils import auth_required, admin_access_required
 
 director_ns = Namespace('directors')
 
@@ -23,6 +23,8 @@ class DirectorsView(Resource):
 
         return directors_schema.dumps(all_directors), 200
 
+    @admin_access_required
+    @auth_required
     def post(self):
         """Функция для записи нового режиссера в базу"""
         req_jason = director_schema.load(request.json)
@@ -39,7 +41,8 @@ class DirectorView(Resource):
         director = director_service.get_one(did)
         return director_schema.dump(director), 200
 
-
+    @admin_access_required
+    @auth_required
     def put(self, did):
         """Функция для внесения изменения в базу по ID"""
         req_jason = director_schema.load(request.json)
@@ -49,6 +52,8 @@ class DirectorView(Resource):
 
         return "", 204
 
+    @admin_access_required
+    @auth_required
     def delete(self, did):
         """Функция для удаления из базы по ID"""
         director_service.delete(did)

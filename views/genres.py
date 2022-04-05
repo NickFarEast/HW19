@@ -3,7 +3,7 @@ from flask import request
 
 from dao.model.genre import GenreSchema
 from implemented import genre_service
-from utils import auth_required
+from utils import auth_required, admin_access_required
 
 genre_ns = Namespace('genres')
 
@@ -19,6 +19,8 @@ class GenresView(Resource):
 
         return genres_schema.dumps(all_genres), 200
 
+    @admin_access_required
+    @auth_required
     def post(self):
         """Функция для записи нового жанра в базу"""
         req_jason = genre_schema.load(request.json)
@@ -28,12 +30,15 @@ class GenresView(Resource):
 
 @genre_ns.route('/<int:gid>')
 class GenreView(Resource):
+
     @auth_required
     def get(self, gid):
         """Функция для получения жанра из базы по ID"""
         genre = genre_service.get_one(gid)
         return genre_schema.dump(genre), 200
 
+    @admin_access_required
+    @auth_required
     def put(self, gid):
         """Функция для внесения изменения в базу по ID"""
         req_jason = genre_schema.load(request.json)
@@ -43,6 +48,8 @@ class GenreView(Resource):
 
         return "", 204
 
+    @admin_access_required
+    @auth_required
     def delete(self, gid):
         """Функция для удаления из базы по ID"""
         genre_service.delete(gid)

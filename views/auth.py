@@ -10,5 +10,8 @@ auth_ns = Namespace('auth')
 class AuthView(Resource):
 
     def post(self):
-        print(type(request.json))
         return auth_service.login(request.json)
+
+
+    def put(self):
+        return auth_service.get_new_token(request.json['refresh_token'])

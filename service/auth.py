@@ -1,37 +1,32 @@
 from dao.auth import AuthDAO
-from flask_restx import abort
 
-from dao.model.user import UserSchema
-from utils import get_hash_password, generate_tokens, decode_token
-import json
 
-users_schema = UserSchema(many=True)
+from utils import generate_tokens, decode_token
+
+
+
 
 
 class AuthService:
     def __init__(self, dao: AuthDAO):
         self.dao = dao
 
-    def login(self, data: dict):
-        print(data)
+    def login(self, username, password):
 
-        users_data = self.dao.get_by_username(data['username'])
-        if users_data is None:
-            abort(401, message='User not found')
 
-        users = users_schema.dumps(users_data)
-        user_dict = json.loads(users)
-        password = data['password']
-        hashed_password = get_hash_password(password=password)
+        user = self.dao.get_by_username(username)
 
-        for user in user_dict:
-            if user['password'] == hashed_password:
-                tokens: dict = generate_tokens({
-                    'username': data['username'],
-                    'role': user['role']
+        user.compare_password(password)
+
+        if user is None or not user.compare_password(password):
+           return"no such user or wrong username and/or password"
+
+        tokens: dict = generate_tokens({
+                    'username': user.username,
+                    'role': user.role
                 }, )
 
-                return tokens
+        return tokens
 
     def get_new_token(self, refresh_token: str):
         decoded_token = decode_token(refresh_token, refresh_token=True)

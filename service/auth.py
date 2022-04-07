@@ -16,7 +16,7 @@ class AuthService:
 
         user = self.dao.get_by_username(username)
 
-        user.compare_password(password)
+
 
         if user is None or not user.compare_password(password):
            return"no such user or wrong username and/or password"
